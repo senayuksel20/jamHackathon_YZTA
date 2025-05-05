@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .correct { color: green; font-weight: bold; }
+        .incorrect { color: red; font-weight: bold; }
+        .correct-answer { color: green; }
+        .question-block {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quiz</h1>
+
+    <form id="quizForm" method="post" action="/analyze">
+        {% for q in questions %}
+            <div class="question-block">
+                <p><strong>{{ loop.index }}. {{ q.question }}</strong></p>
+
+                <p><strong>Şıkları seçiniz (A, B, C veya D):</strong></p>
+                <p>
+                    A) {{ q.options['A'] }}<br>
+                    B) {{ q.options['B'] }}<br>
+                    C) {{ q.options['C'] }}<br>
+                    D) {{ q.options['D'] }}<br>
+                </p>
+
+                <!-- Kullanıcının şık seçmesini sağlayacak input alanı -->
+                <label for="user_answer{{ loop.index0 }}">Seçilen Şık: </label>
+                <input type="text" id="user_answer{{ loop.index0 }}" name="q_{{ loop.index0 }}" placeholder="A, B, C veya D">
+
+                <!-- Soru metni ve doğru cevap -->
+                <input type="hidden" name="text_{{ loop.index0 }}" value="{{ q.question }}">
+                <input type="hidden" name="c_{{ loop.index0 }}" value="{{ q.correct_option }}">
+
+                <!-- Geri bildirim alanı -->
+                <p class="feedback" id="feedback{{ loop.index0 }}"></p>
+
+                <hr>
+            </div>
+        {% endfor %}
+
+        <button type="button" onclick="checkAnswers()">Cevapları Kontrol Et</button>
+        <button type="submit" id="submitBtn" style="display: none;">Sonuçları Analiz Et</button>
+    </form>
+
+    <script>
+        // Cevapları kontrol et butonuna tıklanınca tüm soruları kontrol eden fonksiyon
+        function checkAnswers() {
+            const total = {{ questions|length }};
+            for (let i = 0; i < total; i++) {
+                const userAnswer = document.getElementById(`user_answer${i}`).value.trim().toUpperCase();
+                const correct = document.querySelector(`input[name="c_${i}"]`).value;
+                const feedback = document.getElementById(`feedback${i}`);
+
+                // Kullanıcı doğru şık yazarsa
+                if (userAnswer === correct) {
+                    feedback.innerHTML = "<span class='correct'>Doğru!</span>";
+                }
+                // Yanlış şık yazarsa
+                else if (userAnswer && ['A', 'B', 'C', 'D'].includes(userAnswer)) {
+                    feedback.innerHTML = `<span class='incorrect'>Yanlış!</span> Doğru cevap: <span class='correct-answer'>${correct}</span>`;
+                }
+                // Eğer cevap seçilmediyse
+                else {
+                    feedback.innerHTML = "<span class='incorrect'>Cevap seçilmedi.</span>";
+                }
+            }
+
+            // Sonuçları analiz et butonunu göster
+            document.getElementById("submitBtn").style.display = "inline-block";
+        }
+    </script>
+</body>
+</html>

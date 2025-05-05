@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Analizi</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .result-summary {
+            border: 1px solid #ccc;
+            padding: 20px;
+            width: fit-content;
+            margin: 0 auto;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+        .result-summary h2 {
+            color: #333;
+        }
+        #chartContainer {
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+        }
+    </style>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Sonuç Analizi</h1>
+
+    <div class="result-summary">
+        <h2>Quiz Özeti</h2>
+        <p>Toplam Soru: <strong>{{ total }}</strong></p>
+        <p>Doğru Sayısı: <strong>{{ correct }}</strong></p>
+        <p>Yanlış Sayısı: <strong>{{ wrong }}</strong></p>
+        <p>Başarı Yüzdesi: <strong>{{ percent }}%</strong></p>
+    </div>
+
+    <div id="chartContainer">
+        <canvas id="resultChart"></canvas>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('resultChart').getContext('2d');
+        const percent = {{ percent }};
+        const wrongPercent = 100 - percent;
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Doğru', 'Yanlış'],
+                datasets: [{
+                    data: [percent, wrongPercent],
+                    backgroundColor: ['#4caf50', '#f44336'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed + '%';
+                            }
+                        }
+                    },
+                    // Ortadaki yüzde yazısı
+                    doughnutlabel: {
+                        labels: [
+                            {
+                                text: percent + '%',
+                                font: {
+                                    size: '20'
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        });
+    </script>
+
+    <br>
+    <a href="/" style="text-decoration: none;">
+        <button>Yeni Quiz Oluştur</button>
+    </a>
+</body>
+</html>
