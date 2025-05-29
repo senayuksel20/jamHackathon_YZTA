@@ -2,7 +2,7 @@ import google.generativeai as genai
 from typing import List, Dict, Any
 import re
 
-genai.configure(api_key="AIzaSyD59oskPIWLiXWk3011JhrCo_zsZiAjdyE")
+genai.configure(api_key="write your api key") 
 model = genai.GenerativeModel("gemini-2.0-flash")  # flash yerine pro da olabilir
 
 def generate_quiz_questions_with_gemini(level: str, topic: str, num_questions: int) -> List[Dict[str, Any]]:
